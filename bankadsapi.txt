@@ -1,0 +1,113 @@
+# PRODUCT REQUIREMENTS DOCUMENT (PRD): Customer-Aware Advertising Platform (Bank Ads Engine)
+
+## 1. Overview
+**Product Name:** Customer-Aware Advertising Platform (Bank Ads Engine)
+**Company:** Konined (KO9D) in collaboration with WID Ltd
+**Owners:** King David Uchenna and Ike Wisdom
+**Objective:** An intelligent ad delivery system for banks to display personalized advertisements across ATM, mobile, and web platforms using financial, behavioral, and interest-based targeting.
+
+---
+
+## 2. Goals
+1. **Personalization:** Deliver tailored ads in real time based on customer financial profiles and behavior.
+2. **Engagement:** Improve conversion rates by showing relevant offers.
+3. **Analytics:** Provide a comprehensive dashboard for tracking performance and ROI.
+4. **Management:** Enable easy creation and management of ad campaigns.
+
+---
+
+## 3. Target Users
+1. **Bank Admin:** Manages the platform, monitors global performance, and handles configurations.
+2. **Advertisers (Future):** External brands or internal bank marketing teams creating campaigns.
+3. **End Users:** ATM/Mobile/Web customers who view the ads.
+
+---
+
+## 4. Core Features
+### 4.1 Authentication & Security
+- Secure login system for admins and advertisers.
+- API Key management for secure access to the ad serving engine.
+- HTTPS encryption for all data transmissions.
+- Zero storage of sensitive PII (Personally Identifiable Information).
+
+### 4.2 Ad Creation & Management
+- CRUD operations for ads (Title, Image URL, Segments, Channels, Date ranges).
+- Targeting rules (Balance-based, account type, transaction history).
+- Channel management (ATM, Mobile, Web).
+
+### 4.3 Ad Serving Engine
+- Low-latency API for real-time ad retrieval.
+- Impression and click tracking.
+- Redis caching for high-performance delivery.
+
+### 4.4 Analytics & Reporting
+- Real-time tracking of impressions and clicks.
+- Conversion tracking.
+- Demographic and segment-based performance reports.
+
+---
+
+## 5. Monetization Strategy (Interswitch Integration)
+**Model:** Subscription-based API access.
+1. **Tiered Plans:** Basic, Pro, and Enterprise.
+2. **Billing:** Monthly and annual billing powered by Interswitch Payment APIs.
+3. **Usage Metering:** Pay-per-impression model for high-volume enterprise clients.
+4. **Renewals:** Automated subscription renewal and invoice generation.
+
+---
+
+## 6. Technical Stack
+- **Frontend:** React (Vite) + Tailwind CSS
+- **Backend:** Node.js (Hono Framework)
+- **Database:** PostgreSQL (for relational data like users, campaigns, and billing)
+- **Caching:** Redis (for high-speed ad serving and session management)
+- **Deployment:** (To be determined)
+
+---
+
+## 7. Dashboards (Initial Research)
+### 7.1 Admin Global Dashboard
+- Overview of total impressions, clicks, and revenue.
+- Active subscriptions and billing status.
+- System health monitoring (API latency, database status).
+
+### 7.2 Campaign Manager (Advertiser)
+- Ad creation wizard.
+- Active/Paused campaign management.
+- Campaign-specific analytics (CTR, Impressions by channel).
+
+### 7.3 API & Developer Portal
+- API Key generation and revocation.
+- Usage metrics and limits.
+- Integration documentation.
+
+### 7.4 Billing & Subscription
+- Plan selection and upgrade/downgrade.
+- Payment history and invoice downloads.
+- Interswitch integration settings.
+
+---
+
+## 8. Dashboard Specifications (Detailed)
+
+### 8.1 Bank Admin Dashboard
+- **System Overview:** API health, status of PostgreSQL/Redis, recent error logs.
+- **User Management:** Onboarding new institutions, role-based access control (RBAC).
+- **Global Analytics:** Aggregate impressions and revenue tracking.
+- **API Governance:** Global API key monitoring and rate limit configurations.
+
+### 8.2 Campaign Manager (Advertiser)
+- **Targeting Engine:** Setting financial triggers (e.g., high balance, frequent travel).
+- **Creative Hub:** Managing multi-channel assets (ATM UI vs. Mobile App).
+- **Live Preview:** Real-time simulation of how ads appear on different devices.
+- **Performance ROI:** Tracking conversion from impression to actual product uptake.
+
+### 8.3 Developer & Integration Portal
+- **Key Rotation:** Self-service API key management.
+- **SDK & Docs:** Direct access to integration guides and Swagger docs.
+- **Webhooks:** Configuring alerts for low budget or campaign expiry.
+
+### 8.4 Billing Management (Interswitch Integration)
+- **Consumption Tracking:** Real-time view of "Pay-per-impression" usage.
+- **Invoicing:** Automated generation and storage of receipts.
+- **Subscription Lifecycle:** Handling upgrades, downgrades, and cancellations.
