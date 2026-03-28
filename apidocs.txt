@@ -1,0 +1,534 @@
+Bank Ads API
+ 2.0.0 
+OAS 3.0
+/api/v1/openapi.json
+Ad serving API with intelligent targeting engine. Features include: segment-based targeting, frequency capping, time-slot filtering, composite ad scoring, Redis caching with smart TTL, and rate limiting.
+
+Servers
+
+/ - Current server
+
+Authorize
+Health
+
+
+GET
+/api/v1/health
+Health check
+
+Parameters
+Try it out
+No parameters
+
+Responses
+Code	Description	Links
+200	
+Service health
+
+Media type
+
+application/json
+Controls Accept header.
+Example Value
+Schema
+{
+  "status": "ok",
+  "message": "API is healthy",
+  "database": "connected",
+  "timestamp": "2026-03-28T21:46:51.997Z"
+}
+No links
+Billing
+
+
+GET
+/api/v1/billing/plans
+Get tiered subscription plans
+
+Returns the Basic, Pro, and Enterprise plans with monthly and annual pricing for the frontend pricing page.
+
+Parameters
+Cancel
+No parameters
+
+Execute
+Responses
+Code	Description	Links
+200	
+Available subscription plans
+
+Media type
+
+application/json
+Controls Accept header.
+Example Value
+Schema
+{
+  "billingCycles": [
+    "monthly"
+  ],
+  "interswitch": {
+    "mode": "TEST"
+  },
+  "plans": [
+    {
+      "code": "pro",
+      "label": "Pro",
+      "description": "Growth plan for banks running multiple targeted campaigns.",
+      "features": [
+        "string"
+      ],
+      "monthly": {
+        "amount": 750000,
+        "currency": "NGN",
+        "displayAmount": "NGN 7,500"
+      },
+      "annual": {
+        "amount": 7500000,
+        "currency": "NGN",
+        "displayAmount": "NGN 75,000"
+      }
+    }
+  ]
+}
+No links
+
+POST
+/api/v1/billing/checkout/initiate
+Initialize Interswitch checkout for a subscription
+
+
+GET
+/api/v1/billing/checkout/verify
+Verify an Interswitch subscription payment
+
+Requeries Interswitch with the transaction reference and activates the subscription after a successful payment confirmation.
+
+Parameters
+Try it out
+Name	Description
+transactionReference *
+string
+(query)
+The txn_ref sent to Interswitch during checkout.
+
+transactionReference
+Responses
+Code	Description	Links
+200	
+Verification result
+
+Media type
+
+application/json
+Controls Accept header.
+Example Value
+Schema
+{
+  "message": "Subscription activated",
+  "status": "active",
+  "apiKey": "string",
+  "subscription": {
+    "plan": "enterprise",
+    "billingCycle": "annual",
+    "startDate": "2026-03-28T21:46:52.050Z",
+    "endDate": "2026-03-28T21:46:52.050Z"
+  },
+  "verification": {}
+}
+No links
+400	
+Missing transaction reference
+
+Media type
+
+application/json
+Example Value
+Schema
+{
+  "error": "string"
+}
+No links
+404	
+Pending payment not found
+
+Media type
+
+application/json
+Example Value
+Schema
+{
+  "error": "string"
+}
+No links
+500	
+Verification failed
+
+Media type
+
+application/json
+Example Value
+Schema
+{
+  "error": "string"
+}
+No links
+Ads
+
+
+POST
+/api/v1/ads/serve
+Serve a targeted ad to a customer
+
+Uses the targeting engine to find the best ad for a customer based on their segment, channel, time of day, and viewing history. Rate limited to 100 requests/minute per IP.
+
+Parameters
+Try it out
+No parameters
+
+Request body
+
+application/json
+Example Value
+Schema
+{
+  "balance": 120000,
+  "channel": "ATM",
+  "customerId": "CUST-98765"
+}
+Responses
+Code	Description	Links
+200	
+Targeted ad returned
+
+Media type
+
+application/json
+Controls Accept header.
+Example Value
+Schema
+{
+  "adId": "67c0f4d8e3db53a6d8e8b9f1",
+  "title": "Premium Loan Offer",
+  "imageUrl": "https://cdn.site/ad.jpg",
+  "videoUrl": "https://cdn.site/ad.mp4",
+  "cta": "Apply Now",
+  "segment": "mass",
+  "channel": "ATM",
+  "fallback": true
+}
+Headers:
+Name	Description	Type
+X-RateLimit-Limit	
+Max requests per window
+
+integer
+X-RateLimit-Remaining	
+Remaining requests in current window
+
+integer
+No links
+400	
+Validation error (missing customerId or invalid balance)
+
+Media type
+
+application/json
+Example Value
+Schema
+{
+  "error": "string"
+}
+No links
+404	
+No ad found matching targeting criteria
+
+Media type
+
+application/json
+Example Value
+Schema
+{
+  "message": "string"
+}
+No links
+429	
+Rate limit exceeded
+
+Media type
+
+application/json
+Example Value
+Schema
+{
+  "error": "Rate limit exceeded",
+  "retryAfter": 60
+}
+Headers:
+Name	Description	Type
+Retry-After	
+Seconds to wait before retrying
+
+integer
+No links
+500	
+Server error
+
+Media type
+
+application/json
+Example Value
+Schema
+{
+  "error": "string"
+}
+No links
+
+POST
+/api/v1/ads/create
+Create a new ad
+
+
+Creates an ad campaign. Supports segment, channel, time slot, and location targeting. Automatically invalidates relevant cache entries.
+
+Parameters
+Try it out
+No parameters
+
+Request body
+
+application/json
+Example Value
+Schema
+{
+  "title": "Premium Loan Offer",
+  "imageUrl": "https://cdn.site/ad.jpg",
+  "videoUrl": "https://cdn.site/ad.mp4",
+  "cta": "Apply Now",
+  "segments": [
+    "mass",
+    "affluent"
+  ],
+  "channels": [
+    "ATM",
+    "mobile"
+  ],
+  "timeSlots": [
+    "morning",
+    "afternoon"
+  ],
+  "startDate": "2026-02-14T00:00:00.000Z",
+  "endDate": "2026-03-14T00:00:00.000Z",
+  "status": "active",
+  "priority": 10,
+  "locations": [
+    "Lagos",
+    "Port Harcourt"
+  ],
+  "advertiser": {
+    "name": "ACME Inc.",
+    "contactEmail": "ads@acme.com"
+  }
+}
+Responses
+Code	Description	Links
+200	
+Ad created successfully
+
+Media type
+
+application/json
+Controls Accept header.
+Example Value
+Schema
+{
+  "message": "Ad created",
+  "ads": {}
+}
+No links
+400	
+Validation error
+
+Media type
+
+application/json
+Example Value
+Schema
+{
+  "error": "string"
+}
+No links
+401	
+API key missing
+
+Media type
+
+application/json
+Example Value
+Schema
+{
+  "error": "string"
+}
+No links
+403	
+Invalid API key
+
+Media type
+
+application/json
+Example Value
+Schema
+{
+  "error": "string"
+}
+No links
+500	
+Server error
+
+Media type
+
+application/json
+Example Value
+Schema
+{
+  "error": "string"
+}
+No links
+Analytics
+
+
+POST
+/api/v1/ads/impression
+Track an ad impression
+
+
+Records that an ad was displayed to a customer. If customerId is provided, also updates the customer's frequency cap profile.
+
+Parameters
+Try it out
+No parameters
+
+Request body
+
+application/json
+Example Value
+Schema
+{
+  "adId": "67c0f4d8e3db53a6d8e8b9f1",
+  "customerId": "CUST-98765"
+}
+Responses
+Code	Description	Links
+200	
+Impression recorded
+
+Media type
+
+application/json
+Controls Accept header.
+Example Value
+Schema
+{
+  "message": "string"
+}
+No links
+400	
+Validation error
+
+Media type
+
+application/json
+Example Value
+Schema
+{
+  "error": "string"
+}
+No links
+500	
+Server error
+
+Media type
+
+application/json
+Example Value
+Schema
+{
+  "error": "string"
+}
+No links
+
+POST
+/api/v1/ads/click
+Track an ad click
+
+
+Records that a customer clicked on an ad. Used to calculate CTR for the scoring engine.
+
+Parameters
+Try it out
+No parameters
+
+Request body
+
+application/json
+Example Value
+Schema
+{
+  "adId": "67c0f4d8e3db53a6d8e8b9f1"
+}
+Responses
+Code	Description	Links
+200	
+Click recorded
+
+Media type
+
+application/json
+Controls Accept header.
+Example Value
+Schema
+{
+  "message": "string"
+}
+No links
+400	
+Validation error
+
+Media type
+
+application/json
+Example Value
+Schema
+{
+  "error": "string"
+}
+No links
+500	
+Server error
+
+Media type
+
+application/json
+Example Value
+Schema
+{
+  "error": "string"
+}
+No links
+
+Schemas
+HealthResponse
+BillingPlan
+BillingInitiateRequest
+BillingInitiateResponse
+BillingVerifyResponse
+ServeAdRequest
+ServeAdResponse
+CreateAdRequest
+ImpressionRequest
+ClickRequest
+MessageResponse
+ErrorResponse{
+error	[...]
+}
+RateLimitResponse
